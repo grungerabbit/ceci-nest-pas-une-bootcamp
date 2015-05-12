@@ -26,6 +26,7 @@ $subway = {
 def getSubway(startStop, endStop)
 	# return $subway
 
+	# puts "running"
 	tracker = {}
 
 	$subway.each do |key, value|
@@ -66,10 +67,10 @@ def getSubway(startStop, endStop)
 
 	puts tracker
 
-
 	def findBestTransfer(lineOne, lineTwo, stopOne, stopTwo)
-		puts "!!!"
+		# puts "!!!"
 
+		# puts "sprinting"
 		#puts $subway[lineOne]
 		#puts $subway[lineTwo]
 		#puts $subway[lineOne].length
@@ -89,7 +90,11 @@ def getSubway(startStop, endStop)
 		#puts "!"
 		#puts longer
 
+
+		tripLengths = []
 		possibilities = []
+
+		
 
 		one.each_with_index do |station, idx|
 			#puts longer.include?(station)
@@ -140,18 +145,21 @@ def getSubway(startStop, endStop)
 
 		#puts "#{stopOne} - #{lineOne}"
 
-		$thisRound = []
+
+		#puts possibilities
 
 
+		possibilities.each_with_index do |set, idx|
 
-		possibilities.each do |set|
+			#puts possibilities.length
+
 			#puts set["lineOneTransfer"]
 			#puts set["lineTwoTransfer"]
 
 			#puts set["lineOneTransfer"]
 			#puts stopOne
 
-			puts "hello"
+			#puts "hello"
 			
 			#puts (stopOne > set["lineOneTransfer"] ? stopOne - set["lineOneTransfer"] : oneAdj - stopOne)
 			#puts (stopTwo > set["lineTwoTransfer"] ? stopTwo - set["lineTwoTransfer"] : twoAdj - stopTwo)
@@ -162,27 +170,38 @@ def getSubway(startStop, endStop)
 			distanceOne = stopOne > set["lineOneTransfer"] ? stopOne - set["lineOneTransfer"] : oneAdj - stopOne
 			distanceTwo = stopTwo > set["lineTwoTransfer"] ? stopTwo - set["lineTwoTransfer"] : twoAdj - stopTwo
 
-			puts distanceOne + distanceTwo
+			#puts distanceOne + distanceTwo
 
-			# distanceOne + distanceTwo
+			combined = distanceOne + distanceTwo
 
-			# $thisRound.push(distanceOne + distanceTwo)
+			#puts combined
 
-			if possibilities.length == 1 
-				return distanceOne + distanceTwo
-			else 
-				$thisRound.push(distanceOne + distanceTwo)
-			end
+			tripLengths << combined
+
+			#puts idx
+			#puts combined
+
+			tripLengths[idx] = combined
+			
+
 		end
 
-		# puts $thisRound
+		# what the eff
+		return tripLengths.join(", ")
+
+	#	puts tripLengths
 	end
 
 
 	if tracker['startLine'] == tracker['endLine']
-		puts tracker['endIndex'] - tracker['startIndex']
+		return tracker['endIndex'] - tracker['startIndex']
 	else
-		puts findBestTransfer(tracker['startLine'], tracker['endLine'], tracker['startIndex'], tracker['endIndex'])
+		testTransfer = findBestTransfer(tracker['startLine'], tracker['endLine'], tracker['startIndex'], tracker['endIndex'])
+		zeroth = testTransfer.split(", ")[0].to_i
+		first = testTransfer.split(", ")[1].to_i
+
+		# return the smaller
+		return zeroth > first ? first : zeroth
 	end
 
 	# puts subway["broadway"][startStop]
