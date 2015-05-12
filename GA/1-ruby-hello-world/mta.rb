@@ -63,36 +63,24 @@ def getSubway(startStop, endStop)
 		end
 
 		puts possibilities
-		possibilities.each_with_index do |set, idx|
+		shortest_route = 1000
+
+		possibilities.each do |set|
 			# examine if this is brittle
 			distanceOne = stopOne > set["lineOneTransfer"] ? stopOne - set["lineOneTransfer"] : set["lineOneTransfer"] - stopOne
 			distanceTwo = stopTwo > set["lineTwoTransfer"] ? stopTwo - set["lineTwoTransfer"] : set["lineTwoTransfer"] - stopTwo
 
 			combined = distanceOne + distanceTwo
-
-			# soooooo... why won't this push...
-			# tripLengths << combined
-			tripLengths[idx] = combined # ugh
+			shortest_route = combined if combined < shortest_route
 		end
-		# for some reason it doesn't return an array, so here is an absurd hack to force it
-		return tripLengths.join(", ")
+		return shortest_route
 	end
 
 	# returning answers
 	if tracker['startLine'] == tracker['endLine']
 		return (tracker['endIndex'] - tracker['startIndex']).abs
 	else
-		# in cases of multiple intersections (bway + lex lines, whaddup)
-		# continuation of absurd hack - manually making the returned array
-		testTransfer = findBestTransfer(tracker['startLine'], tracker['endLine'], tracker['startIndex'], tracker['endIndex'])
-		return testTransfer unless testTransfer.match(/[,]/) # return if no comma and thus no mutiple intersections
-
-		puts "options: #{testTransfer}"
-		zeroth = testTransfer.split(", ")[0].to_i
-		first = testTransfer.split(", ")[1].to_i
-
-		# return the smaller route
-		return zeroth > first ? first : zeroth
+		return findBestTransfer(tracker['startLine'], tracker['endLine'], tracker['startIndex'], tracker['endIndex'])
 	end
 end
 
