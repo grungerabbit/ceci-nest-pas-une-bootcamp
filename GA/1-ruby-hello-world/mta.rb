@@ -18,10 +18,13 @@ or you can use Kernel#gets
 $ ri Kernel#gets 
 making the program more interactive."
 
+
 $subway = {
 	'broadway' => [ 'queensboro', '59thLex', '5th59th', '57th7th', '49thBway', '42ndTSQ', '34thHSQ', '28thBway', '23rdBway', '14thUSQ', '8thBway' ],
-	'lex' => [ '68thLex', '59thLex', '51stLex', '42ndGCT', '33rdLex', '23rdLex', '14thUSQ' ],
-	'fourteenth' => ['14th8th', '14th6th', '14thUSQ', '14th3rd', '14th1st', 'bedford']
+	'lex' => [ '68thLex', '59thLex', '51stLex', '42ndGCT', '33rdLex', '28thLex', '23rdLex', '14thUSQ' ],
+	'fourteenth' => ['14th8th', '14th7th', '14th6th', '14thUSQ', '14th3rd', '14th1st', 'bedford'],
+	'seventh' => ['66thLC', '59thCC', '50th7th', '42ndTSQ', '34thPS', '28th7th', '23rd7th', '18th7th', '14th7th', 'christopher'],
+	'eighth' => ['59thCC', '50th8th', '42ndPA', '34thPS', '23rd8th', '14th8th', 'w4th']
 }
 
 def getSubway(startStop, endStop)
@@ -43,7 +46,7 @@ def getSubway(startStop, endStop)
 	end
 	puts tracker
 
-	return "bad input" if tracker.length != 4
+	return "bad input" if tracker.length != 4 # quit if we couldn't find station matches
 
 	def findBestTransfer(lineOne, lineTwo, stopOne, stopTwo)
 		one = $subway[lineOne]
@@ -61,15 +64,15 @@ def getSubway(startStop, endStop)
 
 		puts possibilities
 		possibilities.each_with_index do |set, idx|
-			# this will work only in a limited case, it is brittle
+			# examine if this is brittle
 			distanceOne = stopOne > set["lineOneTransfer"] ? stopOne - set["lineOneTransfer"] : set["lineOneTransfer"] - stopOne
 			distanceTwo = stopTwo > set["lineTwoTransfer"] ? stopTwo - set["lineTwoTransfer"] : set["lineTwoTransfer"] - stopTwo
 
 			combined = distanceOne + distanceTwo
 
-			# soooooo....
+			# soooooo... why won't this push...
 			# tripLengths << combined
-			tripLengths[idx] = combined
+			tripLengths[idx] = combined # ugh
 		end
 		# for some reason it doesn't return an array, so here is an absurd hack to force it
 		return tripLengths.join(", ")
@@ -79,7 +82,7 @@ def getSubway(startStop, endStop)
 	if tracker['startLine'] == tracker['endLine']
 		return (tracker['endIndex'] - tracker['startIndex']).abs
 	else
-		# in cases of multiple intersections
+		# in cases of multiple intersections (bway + lex lines, whaddup)
 		# continuation of absurd hack - manually making the returned array
 		testTransfer = findBestTransfer(tracker['startLine'], tracker['endLine'], tracker['startIndex'], tracker['endIndex'])
 		return testTransfer unless testTransfer.match(/[,]/) # return if no comma and thus no mutiple intersections
@@ -106,17 +109,21 @@ def generateAnswers(startStop, endStop, expect, opt)
 		puts "PASSED!"
 	else
 		puts "FAILED"
-		puts "known issues: stops beyond the transfer point"
+		puts "known issues: 2+ transfers"
 	end	
 end
-
 
 
 generateAnswers('49thBway','23rdBway', 4, false)
 generateAnswers('23rdBway','49thBway', 4, false)
 generateAnswers("bad", "14th8th", "bad input", false)
-generateAnswers('57th7th','23rdLex', 6, 7)
-generateAnswers('28thBway','23rdLex', 3, 10)
-generateAnswers('14th8th', '14th1st', 4, false)
-generateAnswers('5th59th', '14th8th', 9, false)
-generateAnswers('68thLex', 'bedford', 7, false)
+generateAnswers('57th7th','23rdLex', 7, 7)
+generateAnswers('28thBway','23rdLex', 3, 11)
+generateAnswers('14th8th', '14th1st', 5, false)
+generateAnswers('68thLex', 'bedford', 10, false)
+generateAnswers('59thCC', '14th6th', 7, false)
+generateAnswers('59thCC', '42ndGCT', 12, "2+ transfers")
+generateAnswers('68thLex', '23rdBway', 8, 8)
+generateAnswers('68thLex', '34thHSQ', 6, 10)
+generateAnswers('50th8th', 'bedford', 10, false)
+generateAnswers('50th7th', '14th8th', 4, 6)
