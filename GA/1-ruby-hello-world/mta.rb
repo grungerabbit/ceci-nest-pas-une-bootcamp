@@ -19,205 +19,100 @@ $ ri Kernel#gets
 making the program more interactive."
 
 $subway = {
-	'broadway' => [ '59thLex', '5th59th', '57th7th', '49thBway', '42ndTSQ', '34thHSQ', '28thBway', '23rdBway', '14thUSQ' ],
-	'lex' => [ '68thLex', '59thLex', '51stLex', '42ndGCT', '33rdLex', '23rdLex', '14thUSQ' ]
+	'broadway' => [ 'queensboro', '59thLex', '5th59th', '57th7th', '49thBway', '42ndTSQ', '34thHSQ', '28thBway', '23rdBway', '14thUSQ', '8thBway' ],
+	'lex' => [ '68thLex', '59thLex', '51stLex', '42ndGCT', '33rdLex', '23rdLex', '14thUSQ' ],
+	'fourteenth' => ['14th8th', '14th6th', '14thUSQ', '14th3rd', '14th1st', 'bedford']
 }
 
 def getSubway(startStop, endStop)
-	# return $subway
-
-	# puts "running"
-	tracker = {}
+	puts "---"
+	tracker = {} # tracker for lines
 
 	$subway.each do |key, value|
-		#puts "#{key} equals #{value}"
-
-		#puts key
-		#puts value
-		#puts startStop
-
-
-
-		# puts value.include?(startStop)
-
+		# first check that the subway line has the stop
+		# then get index of station and line name (for reference)
 		if value.include?(startStop)
-			# puts value.index(startStop)
-
 			tracker['startIndex'] = value.index(startStop)
 			tracker['startLine'] = key
 		end
 
 		if value.include?(endStop)
-			# puts value.index(endStop)
-
 			tracker['endIndex'] = value.index(endStop)
 			tracker['endLine'] = key
 		end
-
-		# puts value[startStop]
-
-		#value.each do |stop|
-		#	puts stop
-		#end
-
-		#if startStop == value 
-		#	puts "hello"
-		#end
 	end
-
 	puts tracker
 
+	return "bad input" if tracker.length != 4
+
 	def findBestTransfer(lineOne, lineTwo, stopOne, stopTwo)
-		# puts "!!!"
-
-		# puts "sprinting"
-		#puts $subway[lineOne]
-		#puts $subway[lineTwo]
-		#puts $subway[lineOne].length
-		#puts $subway[lineTwo].length
-
-
-
-		#shorter = $subway[lineOne].length <= $subway[lineTwo].length ? $subway[lineOne] : $subway[lineTwo]
-		#longer = shorter == $subway[lineOne] ? $subway[lineTwo] : $subway[lineOne]
-		#shorterLength = shorter.length
-		#longerLength = longer.length
-
 		one = $subway[lineOne]
 		two = $subway[lineTwo]
-
-		#puts shorter
-		#puts "!"
-		#puts longer
-
-
 		tripLengths = []
 		possibilities = []
-
 		
-
+		# checking the first line against the second to see dupes
+		# dupes = places where we can transfer
 		one.each_with_index do |station, idx|
-			#puts longer.include?(station)
-
 			if two.include?(station)
-				#possibilities.push()
-
 				possibilities.push({ 'lineTwoTransfer' => two.index(station), 'lineOneTransfer' => idx, 'station' => station })
-
-
-				#puts longer.index(station)
-				#puts idx
-				# puts stopOne
-				# puts stopTwo
-				
-				# puts "!!"
 			end
 		end
 
-		# puts possibilities
-		#puts shorterLength
-		#puts longerLength
-
-		#puts one.length
-		#puts two.length
-
-		#puts stopOne
-		#puts stopTwo
-
-		#puts lineOne
-		#puts lineTwo
-
-		oneAdj = one.length - 1
-		twoAdj = two.length - 1
-
-
-		# here we will need to check how many stopOne is away from either the beginning or the end
-		
-		# stopOne is 2, stopTwo is 5
-		# lineOne is at index 0 and is 9 long
-		# lineTwo is at index 1 and is 7 long
-		# lineOne is at index 6 and is 9 long
-		# lineTwo is at index 8 and is 7 long
-
-
-		# stopOne - lineOne = 2 - 0 = 2
-		# lineTwo - stopTwo = 7 - 5 = 2
-
-		#puts "#{stopOne} - #{lineOne}"
-
-
-		#puts possibilities
-
-
+		puts possibilities
 		possibilities.each_with_index do |set, idx|
-
-			#puts possibilities.length
-
-			#puts set["lineOneTransfer"]
-			#puts set["lineTwoTransfer"]
-
-			#puts set["lineOneTransfer"]
-			#puts stopOne
-
-			#puts "hello"
-			
-			#puts (stopOne > set["lineOneTransfer"] ? stopOne - set["lineOneTransfer"] : oneAdj - stopOne)
-			#puts (stopTwo > set["lineTwoTransfer"] ? stopTwo - set["lineTwoTransfer"] : twoAdj - stopTwo)
-
 			# this will work only in a limited case, it is brittle
-
-
-			distanceOne = stopOne > set["lineOneTransfer"] ? stopOne - set["lineOneTransfer"] : oneAdj - stopOne
-			distanceTwo = stopTwo > set["lineTwoTransfer"] ? stopTwo - set["lineTwoTransfer"] : twoAdj - stopTwo
-
-			#puts distanceOne + distanceTwo
+			distanceOne = stopOne > set["lineOneTransfer"] ? stopOne - set["lineOneTransfer"] : set["lineOneTransfer"] - stopOne
+			distanceTwo = stopTwo > set["lineTwoTransfer"] ? stopTwo - set["lineTwoTransfer"] : set["lineTwoTransfer"] - stopTwo
 
 			combined = distanceOne + distanceTwo
 
-			#puts combined
-
-			tripLengths << combined
-
-			#puts idx
-			#puts combined
-
+			# soooooo....
+			# tripLengths << combined
 			tripLengths[idx] = combined
-			
-
 		end
-
-		# what the eff
+		# for some reason it doesn't return an array, so here is an absurd hack to force it
 		return tripLengths.join(", ")
-
-	#	puts tripLengths
 	end
 
-
+	# returning answers
 	if tracker['startLine'] == tracker['endLine']
-		return tracker['endIndex'] - tracker['startIndex']
+		return (tracker['endIndex'] - tracker['startIndex']).abs
 	else
+		# in cases of multiple intersections
+		# continuation of absurd hack - manually making the returned array
 		testTransfer = findBestTransfer(tracker['startLine'], tracker['endLine'], tracker['startIndex'], tracker['endIndex'])
+		return testTransfer unless testTransfer.match(/[,]/) # return if no comma and thus no mutiple intersections
+
+		puts "options: #{testTransfer}"
 		zeroth = testTransfer.split(", ")[0].to_i
 		first = testTransfer.split(", ")[1].to_i
 
-		# return the smaller
+		# return the smaller route
 		return zeroth > first ? first : zeroth
 	end
-
-	# puts subway["broadway"][startStop]
-	#subway.each{ |key, value| puts "#{key} equals #{value}" }
 end
 
-# puts getSubway('59thLex', '57th7th')
-
-# subway["broadway"].each(puts this)
-
-#def foo
-#	return "foo"
-#end
-
-#puts foo
 
 puts getSubway('49thBway','23rdBway')
+puts "human unit test: From 49thBway to 23rdBway, expect 4"
+
+puts getSubway('23rdBway','49thBway')
+puts "human unit test: From 49thBway to 23rdBway, expect 4"
+
 puts getSubway('57th7th','23rdLex')
+puts "human unit test: From 57th7th to 23rdLex, expect 6 (other option: 7)"
+
 puts getSubway('28thBway','23rdLex')
+puts "human unit test: From 28thBway to 23rdLex, expect 3 (other option: 10)"
+
+puts getSubway('14th8th', '14th1st')
+puts "human unit test: From 14th8th to 14th1st, expect 4"
+
+puts getSubway('5th59th', '14th8th')
+puts "human unit test: From 5th59th to 14th8th, expect 9"
+
+puts getSubway("bad", '14th8th')
+
+puts getSubway('68thLex', 'bedford')
+puts "human unit test: From 68thLex to bedford, expect 7"
