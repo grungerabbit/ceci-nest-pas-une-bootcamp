@@ -25,7 +25,7 @@ $subway = {
 }
 
 def getSubway(startStop, endStop)
-	puts "---"
+	puts "-----------"
 	tracker = {} # tracker for lines
 
 	$subway.each do |key, value|
@@ -93,26 +93,30 @@ def getSubway(startStop, endStop)
 	end
 end
 
+def generateAnswers(startStop, endStop, expect, opt)
+	submittedAnswer = getSubway(startStop, endStop)
+	puts submittedAnswer
+	puts "***"
+	puts "human unit test: from #{startStop} to #{endStop}, expect #{expect}"
+	puts "other option: #{opt}" if opt != false
 
-puts getSubway('49thBway','23rdBway')
-puts "human unit test: From 49thBway to 23rdBway, expect 4"
+	if expect == "bad input"
+		puts "SUCCESSFUL FAIL!"
+	elsif expect.to_i == submittedAnswer.to_i
+		puts "PASSED!"
+	else
+		puts "FAILED"
+		puts "known issues: stops beyond the transfer point"
+	end	
+end
 
-puts getSubway('23rdBway','49thBway')
-puts "human unit test: From 49thBway to 23rdBway, expect 4"
 
-puts getSubway('57th7th','23rdLex')
-puts "human unit test: From 57th7th to 23rdLex, expect 6 (other option: 7)"
 
-puts getSubway('28thBway','23rdLex')
-puts "human unit test: From 28thBway to 23rdLex, expect 3 (other option: 10)"
-
-puts getSubway('14th8th', '14th1st')
-puts "human unit test: From 14th8th to 14th1st, expect 4"
-
-puts getSubway('5th59th', '14th8th')
-puts "human unit test: From 5th59th to 14th8th, expect 9"
-
-puts getSubway("bad", '14th8th')
-
-puts getSubway('68thLex', 'bedford')
-puts "human unit test: From 68thLex to bedford, expect 7"
+generateAnswers('49thBway','23rdBway', 4, false)
+generateAnswers('23rdBway','49thBway', 4, false)
+generateAnswers("bad", "14th8th", "bad input", false)
+generateAnswers('57th7th','23rdLex', 6, 7)
+generateAnswers('28thBway','23rdLex', 3, 10)
+generateAnswers('14th8th', '14th1st', 4, false)
+generateAnswers('5th59th', '14th8th', 9, false)
+generateAnswers('68thLex', 'bedford', 7, false)
