@@ -40,14 +40,14 @@ def getSubway(startStop, endStop)
 		# puts value.include?(startStop)
 
 		if value.include?(startStop)
-			puts value.index(startStop)
+			# puts value.index(startStop)
 
 			tracker['startIndex'] = value.index(startStop)
 			tracker['startLine'] = key
 		end
 
 		if value.include?(endStop)
-			puts value.index(endStop)
+			# puts value.index(endStop)
 
 			tracker['endIndex'] = value.index(endStop)
 			tracker['endLine'] = key
@@ -97,51 +97,92 @@ def getSubway(startStop, endStop)
 			if two.include?(station)
 				#possibilities.push()
 
-				possibilities.push({ 'lineTwo' => two.index(station), 'lineOne' => idx })
+				possibilities.push({ 'lineTwoTransfer' => two.index(station), 'lineOneTransfer' => idx, 'station' => station })
 
 
 				#puts longer.index(station)
 				#puts idx
-				puts stopOne
-				puts stopTwo
+				# puts stopOne
+				# puts stopTwo
 				
-				puts "!!"
+				# puts "!!"
 			end
 		end
 
-		puts possibilities
+		# puts possibilities
 		#puts shorterLength
 		#puts longerLength
 
-		puts one.length
-		puts two.length
+		#puts one.length
+		#puts two.length
 
-		puts stopOne
-		puts stopTwo
+		#puts stopOne
+		#puts stopTwo
 
-		puts lineOne
-		puts lineTwo
+		#puts lineOne
+		#puts lineTwo
+
+		oneAdj = one.length - 1
+		twoAdj = two.length - 1
+
 
 		# here we will need to check how many stopOne is away from either the beginning or the end
+		
 		# stopOne is 2, stopTwo is 5
 		# lineOne is at index 0 and is 9 long
 		# lineTwo is at index 1 and is 7 long
 		# lineOne is at index 6 and is 9 long
 		# lineTwo is at index 8 and is 7 long
 
-		#
+
+		# stopOne - lineOne = 2 - 0 = 2
+		# lineTwo - stopTwo = 7 - 5 = 2
+
+		#puts "#{stopOne} - #{lineOne}"
+
+		$thisRound = []
+
+
 
 		possibilities.each do |set|
-			#puts set["lineOne"]
-			#puts set["lineTwo"]
+			#puts set["lineOneTransfer"]
+			#puts set["lineTwoTransfer"]
+
+			#puts set["lineOneTransfer"]
+			#puts stopOne
+
+			puts "hello"
+			
+			#puts (stopOne > set["lineOneTransfer"] ? stopOne - set["lineOneTransfer"] : oneAdj - stopOne)
+			#puts (stopTwo > set["lineTwoTransfer"] ? stopTwo - set["lineTwoTransfer"] : twoAdj - stopTwo)
+
+			# this will work only in a limited case, it is brittle
+
+
+			distanceOne = stopOne > set["lineOneTransfer"] ? stopOne - set["lineOneTransfer"] : oneAdj - stopOne
+			distanceTwo = stopTwo > set["lineTwoTransfer"] ? stopTwo - set["lineTwoTransfer"] : twoAdj - stopTwo
+
+			puts distanceOne + distanceTwo
+
+			# distanceOne + distanceTwo
+
+			# $thisRound.push(distanceOne + distanceTwo)
+
+			if possibilities.length == 1 
+				return distanceOne + distanceTwo
+			else 
+				$thisRound.push(distanceOne + distanceTwo)
+			end
 		end
+
+		# puts $thisRound
 	end
 
 
 	if tracker['startLine'] == tracker['endLine']
 		puts tracker['endIndex'] - tracker['startIndex']
 	else
-		findBestTransfer(tracker['startLine'], tracker['endLine'], tracker['startIndex'], tracker['endIndex'])
+		puts findBestTransfer(tracker['startLine'], tracker['endLine'], tracker['startIndex'], tracker['endIndex'])
 	end
 
 	# puts subway["broadway"][startStop]
@@ -160,3 +201,4 @@ end
 
 puts getSubway('49thBway','23rdBway')
 puts getSubway('57th7th','23rdLex')
+puts getSubway('28thBway','23rdLex')
